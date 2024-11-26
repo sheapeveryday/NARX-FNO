@@ -124,21 +124,21 @@ def rmse_loss(x:torch.Tensor, y:torch.Tensor) -> torch.Tensor:
 
 
 def loss_plot(Train_L2, Test_L2, mode, width, depth):
-    x_axis = np.arange(0, len(Train_L2))  # 定义周期数
-    fig = plt.figure(figsize=(20, 7.5)) # 声明图框对象，图框大小
+    x_axis = np.arange(0, len(Train_L2)) 
+    fig = plt.figure(figsize=(20, 7.5)) 
 
-    ax = plt.axes() # 声明坐标轴
+    ax = plt.axes() 
     ax.plot(x_axis, Train_L2, label='Train L2', linewidth=2.0, color='blue')
     ax.plot(x_axis, Test_L2, label='Test L2', linewidth=2.0, color='green')
-    ax.set_xlim(0,len(Train_L2)) # 设置x轴范围
+    ax.set_xlim(0,len(Train_L2)) 
     # ax.set_yscale('log')
-    ax.xaxis.set_minor_locator(MultipleLocator(1)) # 调整刻度
+    ax.xaxis.set_minor_locator(MultipleLocator(1)) 
 
-    ax.set_xlabel('Epoch', fontdict={'family': 'Times New Roman', 'size': 20}) # 设置x轴标签及属性
+    ax.set_xlabel('Epoch', fontdict={'family': 'Times New Roman', 'size': 20}) 
     ax.set_ylabel('Loss', fontdict={'family': 'Times New Roman', 'size': 20})
-    plt.xticks(fontname='Times New Roman', fontsize=16) # 设置x轴数字属性
+    plt.xticks(fontname='Times New Roman', fontsize=16)
     plt.yticks(fontname='Times New Roman', fontsize=16)
-    ax.legend(fancybox=True, framealpha=0.3, shadow=False, prop={'family': 'Times New Roman', 'size': 25}) # 设置图例
+    ax.legend(fancybox=True, framealpha=0.3, shadow=False, prop={'family': 'Times New Roman', 'size': 25})
     plt.title('mode:'+str(mode)+'\nwidth:'+str(width)+'\ndepth:'+str(depth))
     plt.show()
    
@@ -218,7 +218,7 @@ FLOW_PATH = DATA_PATH + '/discharge/discharge1321.txt'
 UPWL_PATH = DATA_PATH + '/water level/upstream/yichang1321.txt'
 DOWNWL_PATH = DATA_PATH + '/water level/downstream/yunchi1321.txt'
 
-# 训练集和测试集数量
+
 ntrain = 3000
 ntest = 100
 batch_size = 10
@@ -327,22 +327,16 @@ df = study.trials_dataframe()
 # activate pytorch
 # cd D:\LYK\gzb2yunchi\FNO\optuna
 # optuna-dashboard sqlite:///v.sqlite3
-# 浏览器输入127.0.0.1:8080打开dashboard查看
 ######################################## 
 
 
-
-  
-# ################################################################
 # # parallel optuna
-# ################################################################
-
-# def optimize(n_trials):
-#     study = optuna.load_study(study_name='test', storage='sqlite:///db.sqlite3')
-#     study.optimize(objective, n_trials=n_trials)
+def optimize(n_trials):
+    study = optuna.load_study(study_name='test', storage='sqlite:///db.sqlite3')
+    study.optimize(objective, n_trials=n_trials)
 
 
-# study = optuna.create_study(study_name='test',direction='minimize',storage='sqlite:///db.sqlite3', load_if_exists=True)
-# r = Parallel(n_jobs=-1)([delayed(optimize)(10) for _ in range(10)])
+study = optuna.create_study(study_name='test',direction='minimize',storage='sqlite:///db.sqlite3', load_if_exists=True)
+r = Parallel(n_jobs=-1)([delayed(optimize)(10) for _ in range(10)])
 
 

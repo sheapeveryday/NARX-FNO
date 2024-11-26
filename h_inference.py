@@ -10,6 +10,7 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator 
 from tqdm import tqdm
+import scipy
 
 
 torch.manual_seed(0)
@@ -120,26 +121,26 @@ def rmse_loss(x:torch.Tensor, y:torch.Tensor) -> torch.Tensor:
 
 
 def lossplot(Train_L2, Test_L2, learning_rate, scheduler_step, scheduler_gamma):
-    x_axis = np.arange(0, len(Train_L2))  # 定义周期数
-    fig = plt.figure(figsize=(20, 7.5)) # 声明图框对象，图框大小
+    x_axis = np.arange(0, len(Train_L2)) 
+    fig = plt.figure(figsize=(20, 7.5)) 
 
-    ax = plt.axes() # 声明坐标轴
+    ax = plt.axes() 
     ax.plot(x_axis, Train_L2, label='Train L2', linewidth=2.0, color='blue')
     ax.plot(x_axis, Test_L2, label='Test L2', linewidth=2.0, color='green')
-    ax.set_xlim(0,len(Train_L2)) # 设置x轴范围
-    # ax.set_ylim(0,1) # 设置y轴范围
-    ax.xaxis.set_minor_locator(MultipleLocator(1)) # 调整刻度
+    ax.set_xlim(0,len(Train_L2)) 
+    # ax.set_ylim(0,1) 
+    ax.xaxis.set_minor_locator(MultipleLocator(1)) 
 
-    ax.set_xlabel('Epoch', fontdict={'family': 'Times New Roman', 'size': 20}) # 设置x轴标签及属性
+    ax.set_xlabel('Epoch', fontdict={'family': 'Times New Roman', 'size': 20}) 
     ax.set_ylabel('Loss', fontdict={'family': 'Times New Roman', 'size': 20})
-    plt.xticks(fontname='Times New Roman', fontsize=16) # 设置x轴数字属性
+    plt.xticks(fontname='Times New Roman', fontsize=16) 
     plt.yticks(fontname='Times New Roman', fontsize=16)
-    ax.legend(fancybox=True, framealpha=0.3, shadow=False, prop={'family': 'Times New Roman', 'size': 25}) # 设置图例
+    ax.legend(fancybox=True, framealpha=0.3, shadow=False, prop={'family': 'Times New Roman', 'size': 25}) 
     plt.title('learning rate:'+str(learning_rate)+'\nstep:'+str(scheduler_step)+'\ngamma:'+str(scheduler_gamma))
     plt.show()
    
     
-DATA_PATH = 'D:/LYK/gzb2yunchi/data'
+DATA_PATH = os.getcwd()
 H_DATA_PATH = DATA_PATH + '/merge/elev1321.mat'
 H_LABEL_PATH = DATA_PATH + '/merge/h1321.mat'
 data_reader = MatReader(H_DATA_PATH)
@@ -156,7 +157,7 @@ y_normalizer = UnitGaussianNormalizer(train_label_h)
 ################################################################
 # configs
 ################################################################
-DATA_PATH = 'D:/LYK/gzb2yunchi/data'
+
 TEST_H_DATA_PATH = DATA_PATH + '/depth/elev2021.mat'
 TEST_H_LABEL_PATH = DATA_PATH + '/depth/h2021.mat'
 FLOW_PATH = DATA_PATH + '/discharge/discharge2021.txt'
@@ -183,8 +184,8 @@ width = 30
 initial_day = 221  # 8月10日
 # initial_day = 319  # 11月16日
 
-duration = 21 # 预见期
-end_day = initial_day + duration  # 
+duration = 21 # lead time
+end_day = initial_day + duration  
 
 hdata_reader = MatReader(TEST_H_DATA_PATH)
 data_ini_h = hdata_reader.read_field('h')[initial_day:end_day,::sub,::sub]
@@ -246,12 +247,12 @@ with torch.no_grad():
 t2 = default_timer()
 print("time:", t2-t1) 
         
-# # Save file
-# path = 'D:/LYK/gzb2yunchi/FNO/inference/prediction/mat/h'
-# for i in range(duration):
-#     date = str(i+1)
-#     Ti = result[i,:,:]
-#     scipy.io.savemat(path+'/h'+date+'.mat', mdict={'pred': Ti})
+# Save file
+path = 'D:/LYK/gzb2yunchi/FNO/inference/prediction/mat/h'
+for i in range(duration):
+    date = str(i+1)
+    Ti = result[i,:,:]
+    scipy.io.savemat(path+'/h'+date+'.mat', mdict={'pred': Ti})
 
    
 # #%%
@@ -259,14 +260,14 @@ print("time:", t2-t1)
 # # # # # assemble test
 # # # # ################################################################
 
-# # 8.1-12.31共153天
-# initial_day = 212  #8月1日
-# # period = [3,7,15,21]  # 预见期3、7、15、21天
+
+# initial_day = 212  
+# # period = [3,7,15,21]  
 
 # for d in range(21):
 #     d += 1
-#     inf_num = 365 - initial_day - d  # 预测的数量，如预见期3天则有151组待预测
-#     hresult = np.zeros((inf_num,d))   # 预测结果矩阵
+#     inf_num = 365 - initial_day - d 
+#     hresult = np.zeros((inf_num,d))   
 #     fname = 'D:/LYK/gzb2yunchi/FNO/inference/uncertainty/h/err'+str(d)+'d.txt' 
 #     for t in range(inf_num):
 #         initial_day_iter = initial_day + t
